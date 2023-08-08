@@ -1,13 +1,12 @@
-import { CssBaseline, ThemeProvider } from "@mui/material"
-import { theme } from "./settings/mui-theme"
 import {
   createBrowserRouter,
   RouterProvider,
 } from "react-router-dom";
 
-import "./App.css"
-import { MenuHeader } from "./components/MenuHeader";
 import { Root } from "./routes/root";
+import Users from "./routes/users";
+import Posts from "./routes/posts";
+import Tags from "./routes/tags";
 
 const router = createBrowserRouter([
   {
@@ -17,29 +16,19 @@ const router = createBrowserRouter([
     children: [
       {
         path: "/users",
-        element: <div>Hello Users page!</div>
+        element: <Users />
       },
       {
         path: "/posts",
-        element: <div>Hello Posts page!</div>,
+        element: <Posts />,
       },
       {
         path: "/tags",
-        element: <div>Hello Tag page!</div>,
+        element: <Tags />,
       }
     ],
   },
 ]);
-
-// function App() {
-//   return (
-//     <ThemeProvider theme={theme}>
-//       <MenuHeader />
-//       <RouterProvider router={router} />
-//         <CssBaseline />
-//     </ThemeProvider>
-//   )
-// }
 
 function App() {
   return <RouterProvider router={router} />

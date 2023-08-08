@@ -64,6 +64,8 @@ function ThemeMenu() {
   const handleClick = (event: MouseEvent<HTMLButtonElement>) => {
     setAnchorEl(event.currentTarget);
   };
+
+  // TODO: Set theme and save it to local storage
   const handleClose = () => {
     setAnchorEl(null);
   };
@@ -86,7 +88,6 @@ function ThemeMenu() {
         onClick={handleClick}
         aria-label="delete"
         sx={{color: "secondary.contrastText"}}
-        // color="secondary.contrastText"
       >
         <FormatPaintIcon />
       </IconButton>
