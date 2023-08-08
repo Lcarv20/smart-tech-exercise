@@ -3,7 +3,7 @@ import {
   RouterProvider,
 } from "react-router-dom";
 
-import { Root } from "./routes/root";
+import { Layout } from "./routes/layout";
 import Users from "./routes/users";
 import Posts from "./routes/posts";
 import Tags from "./routes/tags";
@@ -11,7 +11,7 @@ import Tags from "./routes/tags";
 const router = createBrowserRouter([
   {
     path: "/",
-    element: <Root></Root>,
+    element: <Layout></Layout>,
     errorElement: <div>Error</div>,
     children: [
       {

@@ -1,7 +1,7 @@
 import { Outlet } from "react-router-dom"
 import { MenuHeader } from "../components/MenuHeader"
 
-export const Root = () => {
+export const Layout = () => {
   return (
     <>
       <MenuHeader />

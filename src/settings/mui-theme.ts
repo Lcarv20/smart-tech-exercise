@@ -2,7 +2,7 @@ import { ThemeOptions, createTheme } from '@mui/material/styles';
 
 export const themeOptions: ThemeOptions = {
     palette: {
-        mode: 'light',
+        mode: 'dark',
         primary: {
             main: '#ffa000',
         },
@@ -20,4 +20,5 @@ export const themeOptions: ThemeOptions = {
         borderRadius: 20,
     }
 };
+
 export const theme = createTheme(themeOptions);
