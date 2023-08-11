@@ -8,8 +8,9 @@ import { useLocation, Link } from "react-router-dom";
 import ComputerIcon from '@mui/icons-material/Computer';
 import ModeNightIcon from '@mui/icons-material/ModeNight';
 import LightModeIcon from '@mui/icons-material/LightMode';
+import { Logo } from "./logo";
 
-export const MenuHeader = () => {
+export const MenuBar = () => {
 
   const location = useLocation()
 
@@ -22,38 +23,43 @@ export const MenuHeader = () => {
   return (
     <AppBar
       position="static"
-      color="primary"
-      elevation={0}
-      sx={{ borderRadius: "0px 0px 20px 20px", backgroundColor: "primary" }}
+      elevation={3}
+      sx={{ borderRadius: "0px 0px 20px 20px", bgcolor: "primary.main" }}
     >
       <Container maxWidth="xl" >
         <Toolbar>
           <Link to="/">
             <Button>
-              <Typography color="secondary.contrastText" sx={{ textDecoration: "none" }} fontWeight="bold" variant="h6" component="div" >
-                LOGO
-              </Typography>
-            </Button>
-          </Link>
+              <Logo />
+          </Button>
+        </Link>
 
-          <Box sx={{ flexGrow: 1, display: 'flex', alignItems: 'center', paddingX: 10 }}>
-            {pages.map(({ label, href, icon }) => (
-              <Link key={label} to={href}>
-                <Button
-                  key={label}
-                  disableElevation
-                  sx={{ color: "secondary.contrastText",  mx: 2, textDecoration: location.pathname === href ? 'underline' : 'normal' }}
-                  startIcon={icon}
-                >
-                  {label}
-                </Button>
-              </Link>
-            ))}
-          </Box>
-          <ThemeMenu />
-        </Toolbar>
-      </Container>
-    </AppBar>
+        <Box
+          sx={{
+            flexGrow: 1,
+            display: 'flex',
+            alignItems: 'center',
+            paddingX: 10
+          }}
+        >
+          {pages.map(({ label, href, icon }) => (
+            <Link key={label} to={href}>
+              <Button
+                key={label}
+                disableElevation
+
+                sx={{ fontWeight: 900, color: "primary.contrastText", mx: 2, textDecoration: location.pathname === href ? 'underline' : 'normal' }}
+                startIcon={icon}
+              >
+                {label}
+              </Button>
+            </Link>
+          ))}
+        </Box>
+        {/* <ThemeMenu /> */}
+      </Toolbar>
+    </Container>
+    </AppBar >
   )
 }
 
@@ -87,7 +93,7 @@ function ThemeMenu() {
         aria-expanded={open ? 'true' : undefined}
         onClick={handleClick}
         aria-label="delete"
-        sx={{color: "secondary.contrastText"}}
+        sx={{ color: "primary.contrastText" }}
       >
         <FormatPaintIcon />
       </IconButton>
