@@ -2,16 +2,15 @@ import { ThemeOptions, createTheme } from '@mui/material/styles';
 
 export const themeOptions: ThemeOptions = {
     palette: {
-        mode: 'dark',
         primary: {
-            main: '#ffa000',
+            main: '#1E1E1E',
         },
-        secondary: {
-            main: '#bf360c',
-        },
-        warning: {
-            main: '#ffff00',
-        },
+        // secondary: {
+        //     main: '#bf360c',
+        // },
+        // warning: {
+        //     main: '#ffff00',
+        // },
     },
     typography: {
         fontFamily: 'Josefin Sans',
@@ -22,3 +21,4 @@ export const themeOptions: ThemeOptions = {
 };
 
 export const theme = createTheme(themeOptions);
+

@@ -1,13 +1,31 @@
 import { Outlet } from "react-router-dom"
-import { MenuHeader } from "../components/MenuHeader"
+import { MenuBar } from "../components/MenuBar"
+import { Container, Paper } from "@mui/material"
+import { Footer } from "../components/Footer"
+import React from "react"
 
 export const Layout = () => {
+
   return (
-    <>
-      <MenuHeader />
-      <main>
-        <Outlet />
-      </main>
-    </>
+    <React.Fragment>
+      <Container maxWidth="lg"
+        sx={{
+          mx: "auto",
+          display: "flex",
+          flexDirection: "column",
+          height: "100vh",
+          gap: 4,
+        }}
+      >
+        <MenuBar />
+
+        <Paper elevation={3} sx={{ flexGrow: 1, p: 1, overflow: "auto" }}>
+          <Outlet />
+        </Paper>
+
+        <Footer />
+
+      </Container>
+    </React.Fragment>
   )
 }
