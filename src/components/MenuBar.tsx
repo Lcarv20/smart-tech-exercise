@@ -29,36 +29,41 @@ export const MenuBar = () => {
       <Container maxWidth="xl" >
         <Toolbar>
           <Link to="/">
-            <Button>
+            <Button sx={{
+              transition: "all 0.2s",
+              '&:hover': {
+                transform: "scale(1.2)"
+              }
+            }}>
               <Logo />
-          </Button>
-        </Link>
+            </Button>
+          </Link>
 
-        <Box
-          sx={{
-            flexGrow: 1,
-            display: 'flex',
-            alignItems: 'center',
-            paddingX: 10
-          }}
-        >
-          {pages.map(({ label, href, icon }) => (
-            <Link key={label} to={href}>
-              <Button
-                key={label}
-                disableElevation
+          <Box
+            sx={{
+              flexGrow: 1,
+              display: 'flex',
+              alignItems: 'center',
+              paddingX: 10
+            }}
+          >
+            {pages.map(({ label, href, icon }) => (
+              <Link key={label} to={href}>
+                <Button
+                  key={label}
+                  disableElevation
 
-                sx={{ fontWeight: 900, color: "primary.contrastText", mx: 2, textDecoration: location.pathname === href ? 'underline' : 'normal' }}
-                startIcon={icon}
-              >
-                {label}
-              </Button>
-            </Link>
-          ))}
-        </Box>
-        {/* <ThemeMenu /> */}
-      </Toolbar>
-    </Container>
+                  sx={{ fontWeight: 900, color: "primary.contrastText", mx: 2, textDecoration: location.pathname === href ? 'underline' : 'normal' }}
+                  startIcon={icon}
+                >
+                  {label}
+                </Button>
+              </Link>
+            ))}
+          </Box>
+          {/* <ThemeMenu /> */}
+        </Toolbar>
+      </Container>
     </AppBar >
   )
 }

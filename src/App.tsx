@@ -12,7 +12,7 @@ import { fakeFetch } from "./moking/fakeFetch";
 
 async function dataFetch(endpoint: string) {
   try {
-    const data = await fetch("localhost:5000/api/" + endpoint)
+    const data = await fetch("http://localhost:5050/api/" + endpoint)
     return await data.json()
   } catch (error) {
     // Check error
@@ -30,26 +30,26 @@ const router = createBrowserRouter([
       {
         path: "/users",
         element: <Users />,
-        // loader: async (): Promise<User[]> => {
-        //   return dataFetch("Users")
-        // }
-        loader: () => fakeFetch("users")
+        loader: async (): Promise<User[]> => {
+          return dataFetch("Users")
+        }
+        // loader: () => fakeFetch("users")
       },
       {
         path: "/posts",
         element: <Posts />,
-        // loader: async () => {
-        //   return dataFetch("Posts")
-        // }
-        loader: () => fakeFetch("posts")
+        loader: async () => {
+          return dataFetch("Posts")
+        }
+        // loader: () => fakeFetch("posts")
       },
       {
         path: "/tags",
         element: <Tags />,
-        // loader: async () => {
-        //   return dataFetch("Tags")
-        // }
-        loader: () => fakeFetch("tags")
+        loader: async () => {
+          return dataFetch("Tags")
+        }
+        // loader: () => fakeFetch("tags")
       }
     ],
   },

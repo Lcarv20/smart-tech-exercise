@@ -1,0 +1,17 @@
+.ag-theme-material {
+    /* bright green, 10% opacity */
+    --ag-selected-row-background-color: rgba(0, 0, 0, 0.3);
+    --ag-odd-row-background-color: #f3f3f3;
+    --ag-range-selection-border-color: transparent;
+  }
+
+.ag-cell-focus{
+  outline: none;
+  border: none;
+}
+
+.ag-row-focus {
+  outline: black solid 2px;
+  outline-offset: -2px;
+}
+

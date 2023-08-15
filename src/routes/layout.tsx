@@ -19,7 +19,7 @@ export const Layout = () => {
       >
         <MenuBar />
 
-        <Paper elevation={3} sx={{ flexGrow: 1, p: 1, overflow: "auto" }}>
+        <Paper elevation={3} sx={{ flexGrow: 1, p: 1, overflow: "scroll" }}>
           <Outlet />
         </Paper>
 
