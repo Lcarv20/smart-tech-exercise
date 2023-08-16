@@ -6,11 +6,12 @@ import { AgGridReact } from "ag-grid-react";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { colDef } from "./colDefs";
 import { ColDef, GridApi, GridReadyEvent } from "ag-grid-community";
-import { Box, Button } from "@mui/material";
+import { Box, Button, IconButton } from "@mui/material";
 import AddIcon from "@mui/icons-material/Add";
 import "../../components/grid-styles.css";
 import AddUserForm from "./AddUserForm";
 import ActionBar from "../../components/AGGrid/ActionBar";
+import FilterListOffIcon from '@mui/icons-material/FilterListOff';
 
 interface RowData {
   id: number;
@@ -22,6 +23,7 @@ interface RowData {
 export default function Users() {
   const data = useLoaderData() as User[];
 
+  const [hasFilter, setHasFilter] = useState(false);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [isEdit, setIsEdit] = useState(false);
   const [rowData, setRowData] = useState<RowData[]>();
@@ -38,7 +40,6 @@ export default function Users() {
   );
   const defaultColDef = useMemo<ColDef>(() => {
     return {
-      // editable: true,
       sortable: true,
       filter: true,
       resizable: true,
@@ -73,11 +74,21 @@ export default function Users() {
     setColumnDefs(colDef(isEdit));
   }, [isEdit]);
 
+  useEffect(() => {
+    console.log(gridRef.current?.getFilterModel())
+  })
+
   const handleEditing = (isEditing: boolean) => {
     setIsEdit(isEditing);
     if (gridRef.current) {
       gridRef.current.deselectAll();
+      gridRef.current.stopEditing();
     }
+  }
+
+  const resetFilter = () => {
+    gridRef.current?.setFilterModel(null);
+    setHasFilter(false);
   }
 
   return (
@@ -96,6 +107,12 @@ export default function Users() {
         justifyContent={"end"}
         alignItems={"center"}
       >
+        {hasFilter &&
+          <IconButton color="primary" sx={{ mb: 1, mr: "auto" }} onClick={resetFilter}>
+            <FilterListOffIcon />
+          </IconButton>
+        }
+
         <ActionBar fn={handleEditing} />
       </Box>
 
@@ -109,6 +126,13 @@ export default function Users() {
           onGridReady={onGridReady}
           columnDefs={columnDefs}
           rowSelection="multiple"
+          onFilterChanged={(params) => {
+            if(Object.keys(params.api.getFilterModel()).length > 0) {
+              setHasFilter(true)
+            } else {
+              setHasFilter(false)
+            }
+          }}
         />
       </div>
 

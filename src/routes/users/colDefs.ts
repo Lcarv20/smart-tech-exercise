@@ -16,8 +16,8 @@ export const colDef = (editMode: boolean) => {
       width: 60,
       hide: !editMode,
     },
-    { field: "username", editable: true },
-    { field: "email", editable: true },
+    { field: "username", editable: editMode },
+    { field: "email", editable: editMode },
     { field: "posts", editable: false },
   ];
 };

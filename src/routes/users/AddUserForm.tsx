@@ -39,6 +39,8 @@ export default function AddUserForm(props: AddUserFormProps) {
     console.log(name, mail);
 
     // Handle here the POST new User
+    // fetch (post new user)
+    // if ok, add to userRow state
 
     reset();
   };

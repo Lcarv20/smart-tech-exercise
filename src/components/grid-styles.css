@@ -7,6 +7,12 @@
   --ag-checkbox-checked-color: black;
   --ag-checkbox-unchecked-color: whitesmote;
   --ag-checkbox-indeterminate-color: black;
+
+  /* Disabling borders */
+  --ag-borders: none;
+  --ag-row-border-style: none;
+  --ag-row-border-width: 0px;
+  --ag-row-border-color: rgb(150, 150, 200);
 }
 
 .ag-cell-focus {
