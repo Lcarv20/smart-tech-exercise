@@ -5,7 +5,7 @@ import "ag-grid-community/styles/ag-theme-material.css";
 import { AgGridReact } from "ag-grid-react";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { colDef } from "./colDefs";
-import { ColDef, GridReadyEvent } from "ag-grid-community";
+import { ColDef, GridApi, GridReadyEvent } from "ag-grid-community";
 import { Box, Button } from "@mui/material";
 import AddIcon from "@mui/icons-material/Add";
 import "../../components/grid-styles.css";
@@ -48,7 +48,7 @@ export default function Users() {
 
   const onGridReady = useCallback(
     (params: GridReadyEvent) => {
-      console.log("params", params);
+      gridRef.current = params.api; // set the gridRef here
       setRowData(
         data.map((user) => {
           return {
@@ -63,7 +63,7 @@ export default function Users() {
     [data],
   );
 
-  const gridRef = useRef(null);
+  const gridRef = useRef<GridApi<RowData> | null>(null);
 
   const handleOpenDialog = () => {
     setIsDialogOpen(true);
@@ -72,6 +72,13 @@ export default function Users() {
   useEffect(() => {
     setColumnDefs(colDef(isEdit));
   }, [isEdit]);
+
+  const handleEditing = (isEditing: boolean) => {
+    setIsEdit(isEditing);
+    if (gridRef.current) {
+      gridRef.current.deselectAll();
+    }
+  }
 
   return (
     <Box
@@ -89,13 +96,12 @@ export default function Users() {
         justifyContent={"end"}
         alignItems={"center"}
       >
-        <ActionBar fn={setIsEdit} />
+        <ActionBar fn={handleEditing} />
       </Box>
 
       {/* Grid */}
       <div style={gridStyle} className="ag-theme-material">
-        <AgGridReact
-          ref={gridRef}
+        <AgGridReact<RowData>
           animateRows
           editType={"fullRow"}
           rowData={rowData}

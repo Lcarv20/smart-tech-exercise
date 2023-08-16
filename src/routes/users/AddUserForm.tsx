@@ -33,7 +33,7 @@ export default function AddUserForm(props: AddUserFormProps) {
 
   // ZOD SCHEMAS
   const nameSchema = useMemo(() => z.string().nonempty().min(3), []);
-  const mailSchema = useMemo(() => z.string().email(), []);
+  const mailSchema = useMemo(() => z.string().nonempty().email(), []);
 
   const handleSubmit = () => {
     console.log(name, mail);
@@ -58,15 +58,22 @@ export default function AddUserForm(props: AddUserFormProps) {
   const handleMailChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
   ) => {
-    const val = nameSchema.safeParse(e.target.value);
+    const val = mailSchema.safeParse(e.target.value);
     if (!val.success) {
-      setNameError(true);
+      setMailError(true);
+    } else {
+      setMailError(false);
     }
     setMail(e.target.value);
   };
 
+  const closeModal = () => {
+    onClose()
+    reset()
+  }
+
   return (
-    <Dialog onClose={onClose} open={open}>
+    <Dialog onClose={closeModal} open={open}>
       <DialogTitle>Add a new user.</DialogTitle>
       <DialogContent>
         <Form>
@@ -83,6 +90,7 @@ export default function AddUserForm(props: AddUserFormProps) {
               id="standard-basic"
               label="email"
               variant="standard"
+              error={mailError}
               value={mail}
               onChange={handleMailChange}
             />
