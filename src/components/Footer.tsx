@@ -1,4 +1,4 @@
-import { AppBar } from '@mui/material'
+import { AppBar } from "@mui/material";
 
 export const Footer = () => {
   return (
@@ -9,5 +9,5 @@ export const Footer = () => {
     >
       <h4 style={{ textAlign: "center" }}>Crafted by lcarv 🧶🔥</h4>
     </AppBar>
-  )
-}
+  );
+};

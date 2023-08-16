@@ -11,7 +11,7 @@ export interface Post {
   description: string;
   postDate: string;
   user: User;
-  tagIds: number[]; 
+  tagIds: number[];
 }
 
 export interface Tag {

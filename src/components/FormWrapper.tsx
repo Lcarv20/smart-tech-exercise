@@ -5,12 +5,11 @@ export default function Form({ children }: { children: React.ReactNode }) {
     <Box
       component="form"
       sx={{
-        '& .MuiTextField-root': { m: 1, width: '25ch' },
+        "& .MuiTextField-root": { m: 1, width: "25ch" },
       }}
-      noValidate
-    // autoComplete="off"
+      // autoComplete="off"
     >
       {children}
     </Box>
-  )
+  );
 }

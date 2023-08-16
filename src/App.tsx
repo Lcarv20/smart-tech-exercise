@@ -1,23 +1,20 @@
-import {
-  createBrowserRouter,
-  RouterProvider,
-} from "react-router-dom";
+import { createBrowserRouter, RouterProvider } from "react-router-dom";
 
 import { Layout } from "./routes/layout";
 import Users from "./routes/users";
 import Posts from "./routes/posts";
 import Tags from "./routes/tags";
 import { User } from "./stores/types";
-import { fakeFetch } from "./moking/fakeFetch";
+// import { fakeFetch } from "./moking/fakeFetch";
 
 async function dataFetch(endpoint: string) {
   try {
-    const data = await fetch("http://localhost:5050/api/" + endpoint)
-    return await data.json()
+    const data = await fetch("http://localhost:5050/api/" + endpoint);
+    return await data.json();
   } catch (error) {
     // Check error
     // display error crumb
-    console.error(error)
+    console.error(error);
   }
 }
 
@@ -31,32 +28,32 @@ const router = createBrowserRouter([
         path: "/users",
         element: <Users />,
         loader: async (): Promise<User[]> => {
-          return dataFetch("Users")
-        }
+          return dataFetch("Users");
+        },
         // loader: () => fakeFetch("users")
       },
       {
         path: "/posts",
         element: <Posts />,
         loader: async () => {
-          return dataFetch("Posts")
-        }
+          return dataFetch("Posts");
+        },
         // loader: () => fakeFetch("posts")
       },
       {
         path: "/tags",
         element: <Tags />,
         loader: async () => {
-          return dataFetch("Tags")
-        }
+          return dataFetch("Tags");
+        },
         // loader: () => fakeFetch("tags")
-      }
+      },
     ],
   },
 ]);
 
 function App() {
-  return <RouterProvider router={router} />
+  return <RouterProvider router={router} />;
 }
 
-export default App
+export default App;

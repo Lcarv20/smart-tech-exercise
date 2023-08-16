@@ -1,14 +1,14 @@
-import { Outlet } from "react-router-dom"
-import { MenuBar } from "../components/MenuBar"
-import { Container, Paper } from "@mui/material"
-import { Footer } from "../components/Footer"
-import React from "react"
+import { Outlet } from "react-router-dom";
+import { MenuBar } from "../components/MenuBar";
+import { Container, Paper } from "@mui/material";
+import { Footer } from "../components/Footer";
+import React from "react";
 
 export const Layout = () => {
-
   return (
     <React.Fragment>
-      <Container maxWidth="lg"
+      <Container
+        maxWidth="lg"
         sx={{
           mx: "auto",
           display: "flex",
@@ -24,8 +24,7 @@ export const Layout = () => {
         </Paper>
 
         <Footer />
-
       </Container>
     </React.Fragment>
-  )
-}
+  );
+};

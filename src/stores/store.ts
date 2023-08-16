@@ -1,17 +1,17 @@
-import { configureStore } from '@reduxjs/toolkit'
-import usersReducer from './usersReducer'
-import tagsReducer from './tagsReducer'
-import postsReducer from './postsReducer'
+import { configureStore } from "@reduxjs/toolkit";
+import usersReducer from "./usersReducer";
+import tagsReducer from "./tagsReducer";
+import postsReducer from "./postsReducer";
 
 export const store = configureStore({
   reducer: {
-    users : usersReducer,
-    tags : tagsReducer,
-    posts : postsReducer,
+    users: usersReducer,
+    tags: tagsReducer,
+    posts: postsReducer,
   },
-})
+});
 
 // Infer the `RootState` and `AppDispatch` types from the store itself
-export type RootState = ReturnType<typeof store.getState>
+export type RootState = ReturnType<typeof store.getState>;
 // Inferred type: {posts: PostsState, comments: CommentsState, users: UsersState}
-export type AppDispatch = typeof store.dispatch
+export type AppDispatch = typeof store.dispatch;
