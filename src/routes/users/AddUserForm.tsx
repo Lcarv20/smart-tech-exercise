@@ -7,40 +7,77 @@ import {
   Stack,
   TextField,
 } from "@mui/material";
-import React, { useMemo, useState } from "react";
+import React, { useState } from "react";
 import Form from "../../components/FormWrapper";
 import { z } from "zod";
+import { RowData } from ".";
+import { dataFetch } from "../../functions/requests";
+import { RowNodeTransaction } from "ag-grid-community";
 
 interface AddUserFormProps {
   open: boolean;
-  handleSubmit: () => void;
-  onClose: () => void;
+  closeHandler: () => void;
+  updateStateHandler: React.Dispatch<React.SetStateAction<RowData[] | undefined>>
+  addNewRow: (newRowData: RowData) => RowNodeTransaction<RowData> | null | undefined
 }
 
-export default function AddUserForm(props: AddUserFormProps) {
-  const [nameError, setNameError] = useState(false);
-  const [mailError, setMailError] = useState(false);
+// ZOD SCHEMAS
+const nameSchema = z.string().nonempty().min(3)
+const mailSchema = z.string().nonempty().email()
+
+export default function AddUserForm({ open, closeHandler, updateStateHandler, addNewRow: refreshGrid }: AddUserFormProps) {
+  const [nameErr, setNameErr] = useState(false);
+  const [emailErr, setEmailErr] = useState(false);
   const [name, setName] = useState("");
-  const [mail, setMail] = useState("");
-  const { onClose, open } = props;
+  const [email, setEmail] = useState("");
 
   const reset = () => {
-    setNameError(false);
-    setMailError(false);
+    setNameErr(false);
+    setEmailErr(false);
     setName("");
-    setMail("");
+    setEmail("");
   };
 
-  // ZOD SCHEMAS
-  const nameSchema = useMemo(() => z.string().nonempty().min(3), []);
-  const mailSchema = useMemo(() => z.string().nonempty().email(), []);
 
-  const handleSubmit = () => {
-    console.log(name, mail);
+  const handleSubmit = async () => {
+    if (!validateSubmission(name, email, nameErr, emailErr)) {
+      alert("Invalid data");
+      return;
+    }
 
-    // Handle here the POST new User
-    // fetch (post new user)
-    // if ok, add to userRow state
+    closeHandler();
+
+    console.log(name, email);
+    // 1. Post to API new user
+    const res = await dataFetch("Users", "POST", {
+      name,
+      email
+    })
+
+    // Handle error properly
+    if (res.Error) {
+      console.log(res.Error)
+      alert(res.Message)
+    } else {
+      console.log(res)
+      const { email, posts, id, username } = res.data
+      // Refactor my code to be more DRY
+      updateStateHandler(state => {
+        state?.push({
+          id,
+          username,
+          email,
+          posts: posts?.length ?? 0
+        })
+        return state
+      })
+      refreshGrid({
+        id,
+        username,
+        email,
+        posts: posts?.length ?? 0
+      })
+    }
 
     reset();
   };
@@ -50,9 +87,9 @@ export default function AddUserForm(props: AddUserFormProps) {
   ) => {
     const val = nameSchema.safeParse(e.target.value);
     if (!val.success) {
-      setNameError(true);
+      setNameErr(true);
     } else {
-      setNameError(false);
+      setNameErr(false);
     }
     setName(e.target.value);
   };
@@ -62,15 +99,15 @@ export default function AddUserForm(props: AddUserFormProps) {
   ) => {
     const val = mailSchema.safeParse(e.target.value);
     if (!val.success) {
-      setMailError(true);
+      setEmailErr(true);
     } else {
-      setMailError(false);
+      setEmailErr(false);
     }
-    setMail(e.target.value);
+    setEmail(e.target.value);
   };
 
   const closeModal = () => {
-    onClose()
+    closeHandler()
     reset()
   }
 
@@ -82,29 +119,42 @@ export default function AddUserForm(props: AddUserFormProps) {
           <Stack>
             <TextField
               id="standard-basic"
+              type="text"
               label="name"
               variant="standard"
-              error={nameError}
+              error={nameErr}
               value={name}
               onChange={handleNameChange}
             />
             <TextField
               id="standard-basic"
+              type="email"
               label="email"
               variant="standard"
-              error={mailError}
-              value={mail}
+              error={emailErr}
+              value={email}
               onChange={handleMailChange}
             />
           </Stack>
         </Form>
       </DialogContent>
       <DialogActions>
-        <Button variant="text" color="error" onClick={onClose}>
+        <Button variant="text" color="error" onClick={closeHandler}>
           Cancel
         </Button>
         <Button onClick={handleSubmit}>Submit</Button>
       </DialogActions>
     </Dialog>
   );
+}
+
+
+function validateSubmission(name: string, email: string, nameErr: boolean, emailErr: boolean) {
+  if (nameErr || emailErr) {
+    return false;
+  }
+  if (name === "" || email === "") {
+    return false;
+  }
+  return true;
 }

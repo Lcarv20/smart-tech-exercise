@@ -1,12 +1,12 @@
 import { useLoaderData } from "react-router-dom";
-import { Tag } from "../../stores/types";
 import { useAppDispatch, useAppSelector } from "../../stores/hooks";
 import { useEffect } from "react";
 import { getTags } from "../../stores/tagsReducer";
 import { Button } from "@mui/material";
+import { TagRes } from "../../utils/dataTypes";
 
-export default function Tags() {
-  const tags = useLoaderData() as Tag[];
+export default function TagsRoute() {
+  const tags = useLoaderData() as TagRes[];
   const dispatch = useAppDispatch();
   const tagsState = useAppSelector((state) => state.tags);
 
@@ -14,7 +14,7 @@ export default function Tags() {
     dispatch(getTags(tags));
     // console.log("tags", tags)
     console.log("state:", tagsState);
-  }, [tags]);
+  }, [tags, dispatch, tagsState]);
 
   return (
     <div>

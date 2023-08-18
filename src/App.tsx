@@ -1,52 +1,38 @@
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
 
 import { Layout } from "./routes/layout";
-import Users from "./routes/users";
-import Posts from "./routes/posts";
-import Tags from "./routes/tags";
-import { User } from "./stores/types";
-// import { fakeFetch } from "./moking/fakeFetch";
-
-async function dataFetch(endpoint: string) {
-  try {
-    const data = await fetch("http://localhost:5050/api/" + endpoint);
-    return await data.json();
-  } catch (error) {
-    // Check error
-    // display error crumb
-    console.error(error);
-  }
-}
+import UsersRoute from "./routes/users";
+import PostsRoute from "./routes/posts";
+import TagsRoute from "./routes/tags";
+import { dataFetch } from "./functions/requests";
 
 const router = createBrowserRouter([
   {
     path: "/",
     element: <Layout></Layout>,
+    // Display proper error page V
     errorElement: <div>Error</div>,
     children: [
       {
         path: "/users",
-        element: <Users />,
-        loader: async (): Promise<User[]> => {
-          return dataFetch("Users");
+        element: <UsersRoute />,
+        loader: async () => {
+          return await dataFetch("Users");
         },
-        // loader: () => fakeFetch("users")
       },
       {
         path: "/posts",
-        element: <Posts />,
+        element: <PostsRoute />,
         loader: async () => {
-          return dataFetch("Posts");
+          return await dataFetch("Posts");
         },
-        // loader: () => fakeFetch("posts")
       },
       {
         path: "/tags",
-        element: <Tags />,
+        element: <TagsRoute />,
         loader: async () => {
-          return dataFetch("Tags");
+          return await dataFetch("Tags");
         },
-        // loader: () => fakeFetch("tags")
       },
     ],
   },

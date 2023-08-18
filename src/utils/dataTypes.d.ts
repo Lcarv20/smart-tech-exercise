@@ -1,21 +1,22 @@
-export interface User {
+export interface UserRes {
   id: number;
   username: string;
   email: string;
-  posts: Post[];
+  posts: PostRes[];
 }
 
-export interface Post {
+export interface PostRes {
   id: number;
   title: string;
   description: string;
   postDate: string;
-  user: User;
+  user: UserRes;
   tagIds: number[];
 }
 
-export interface Tag {
+export interface TagRes {
   id: number;
   name: string;
-  posts: Post[];
+  posts: PostRes[];
 }
+

@@ -1,5 +1,4 @@
 import { useLoaderData } from "react-router-dom";
-import { User } from "../../stores/types";
 import "ag-grid-community/styles/ag-grid.css";
 import "ag-grid-community/styles/ag-theme-material.css";
 import { AgGridReact } from "ag-grid-react";
@@ -12,16 +11,18 @@ import "../../components/grid-styles.css";
 import AddUserForm from "./AddUserForm";
 import ActionBar from "../../components/AGGrid/ActionBar";
 import FilterListOffIcon from '@mui/icons-material/FilterListOff';
+import 'ag-grid-enterprise';
+import { UserRes } from "../../utils/dataTypes";
 
-interface RowData {
+export interface RowData {
   id: number;
   username: string;
   email: string;
   posts: number;
 }
 
-export default function Users() {
-  const data = useLoaderData() as User[];
+export default function UsersRoute() {
+  const data = useLoaderData() as UserRes[];
 
   const [hasFilter, setHasFilter] = useState(false);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
@@ -38,6 +39,7 @@ export default function Users() {
     }),
     [],
   );
+
   const defaultColDef = useMemo<ColDef>(() => {
     return {
       sortable: true,
@@ -74,11 +76,8 @@ export default function Users() {
     setColumnDefs(colDef(isEdit));
   }, [isEdit]);
 
-  useEffect(() => {
-    console.log(gridRef.current?.getFilterModel())
-  })
 
-  const handleEditing = (isEditing: boolean) => {
+  const handleIsEditMode = (isEditing: boolean) => {
     setIsEdit(isEditing);
     if (gridRef.current) {
       gridRef.current.deselectAll();
@@ -107,13 +106,14 @@ export default function Users() {
         justifyContent={"end"}
         alignItems={"center"}
       >
-        {hasFilter &&
+        {
+          hasFilter &&
           <IconButton color="primary" sx={{ mb: 1, mr: "auto" }} onClick={resetFilter}>
             <FilterListOffIcon />
           </IconButton>
         }
 
-        <ActionBar fn={handleEditing} />
+        <ActionBar fn={handleIsEditMode} api={gridRef.current} />
       </Box>
 
       {/* Grid */}
@@ -126,8 +126,10 @@ export default function Users() {
           onGridReady={onGridReady}
           columnDefs={columnDefs}
           rowSelection="multiple"
+          enableRangeSelection
+          suppressMultiRangeSelection
           onFilterChanged={(params) => {
-            if(Object.keys(params.api.getFilterModel()).length > 0) {
+            if (Object.keys(params.api.getFilterModel()).length > 0) {
               setHasFilter(true)
             } else {
               setHasFilter(false)
@@ -156,10 +158,11 @@ export default function Users() {
       {/* Add Entries Modal */}
       <AddUserForm
         open={isDialogOpen}
-        onClose={() => setIsDialogOpen(false)}
-        handleSubmit={() => {
-          setIsDialogOpen(false);
-        }}
+        addNewRow={(newRowData: RowData) => gridRef.current?.applyTransaction({
+          add: [newRowData]
+        })}
+        updateStateHandler={setRowData}
+        closeHandler={() => setIsDialogOpen(false)}
       />
     </Box>
   );
