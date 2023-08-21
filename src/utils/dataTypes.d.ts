@@ -19,4 +19,3 @@ export interface TagRes {
   name: string;
   posts: PostRes[];
 }
-

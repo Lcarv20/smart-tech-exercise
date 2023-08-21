@@ -1,23 +1,8 @@
-import {
-  AppBar,
-  Box,
-  Button,
-  Container,
-  IconButton,
-  Menu,
-  MenuItem,
-  Toolbar,
-  useTheme,
-} from "@mui/material";
+import { AppBar, Box, Button, Container, Toolbar } from "@mui/material";
 import PeopleAltIcon from "@mui/icons-material/PeopleAlt";
 import TextSnippetIcon from "@mui/icons-material/TextSnippet";
 import SellIcon from "@mui/icons-material/Sell";
-import FormatPaintIcon from "@mui/icons-material/FormatPaint";
-import { useState, MouseEvent } from "react";
 import { useLocation, Link } from "react-router-dom";
-import ComputerIcon from "@mui/icons-material/Computer";
-import ModeNightIcon from "@mui/icons-material/ModeNight";
-import LightModeIcon from "@mui/icons-material/LightMode";
 import { Logo } from "./logo";
 
 export const MenuBar = () => {
@@ -83,68 +68,3 @@ export const MenuBar = () => {
     </AppBar>
   );
 };
-
-function ThemeMenu() {
-  const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
-  const open = Boolean(anchorEl);
-  const handleClick = (event: MouseEvent<HTMLButtonElement>) => {
-    setAnchorEl(event.currentTarget);
-  };
-
-  // TODO: Set theme and save it to local storage
-  const handleClose = () => {
-    setAnchorEl(null);
-  };
-  const theme = useTheme();
-  const themeMode = theme.palette.mode;
-
-  const ThemeOptions = [
-    { label: "System", icon: <ComputerIcon /> },
-    { label: "Light", icon: <LightModeIcon /> },
-    { label: "Dark", icon: <ModeNightIcon /> },
-  ];
-
-  return (
-    <div>
-      <IconButton
-        id="basic-button"
-        aria-controls={open ? "basic-menu" : undefined}
-        aria-haspopup="true"
-        aria-expanded={open ? "true" : undefined}
-        onClick={handleClick}
-        aria-label="delete"
-        sx={{ color: "primary.contrastText" }}
-      >
-        <FormatPaintIcon />
-      </IconButton>
-
-      <Menu
-        id="basic-menu"
-        anchorEl={anchorEl}
-        open={open}
-        onClose={handleClose}
-        MenuListProps={{
-          "aria-labelledby": "basic-button",
-        }}
-      >
-        {ThemeOptions.map(({ label, icon }) => (
-          <MenuItem
-            selected={themeMode === label}
-            sx={{
-              display: "flex",
-              gap: 2,
-              color:
-                themeMode === label.toLowerCase()
-                  ? theme.palette.primary.main
-                  : "inherit",
-            }}
-            key={label}
-            onClick={handleClose}
-          >
-            {icon} {label}
-          </MenuItem>
-        ))}
-      </Menu>
-    </div>
-  );
-}

@@ -9,31 +9,44 @@ import DeleteIcon from "@mui/icons-material/Delete";
 import CheckIcon from "@mui/icons-material/Check";
 import EditIcon from "@mui/icons-material/Edit";
 import CloseIcon from "@mui/icons-material/Close";
-import { GridApi } from "ag-grid-community";
-import { RowData } from "../../routes/users";
-import { DataFetch, dataFetch } from "../../functions/requests";
 
 interface ActionBarProps {
-  fn: (isEdit: boolean) => void;
-  api: GridApi<RowData> | null;
+  changeMode: (isEdit: boolean) => void;
+  delRows: () => Promise<void>;
+  updateRows: () => Promise<void>;
 }
 
-export default function ActionBar({ fn, api }: ActionBarProps) {
+export default function ActionBar({
+  changeMode,
+  delRows,
+  updateRows,
+}: ActionBarProps) {
   const [open, setOpen] = useState(false);
   const theme = useTheme();
 
   const handleOpen = () => {
-    fn(true);
+    changeMode(true);
+
     setOpen(true);
   };
   const handleClose = () => {
-    fn(false);
+    changeMode(false);
     setOpen(false);
   };
 
   const actions = [
-    { icon: <DeleteIcon />, name: "Delete", color: theme.palette.error.main, onClick: () => deleteRow(api, dataFetch) },
-    { icon: <CheckIcon />, name: "Save", color: theme.palette.success.main },
+    {
+      icon: <DeleteIcon />,
+      name: "Delete",
+      color: theme.palette.error.main,
+      onClick: () => delRows(),
+    },
+    {
+      icon: <CheckIcon />,
+      name: "Save",
+      color: theme.palette.success.main,
+      onClick: () => updateRows(),
+    },
   ];
 
   return (
@@ -54,7 +67,7 @@ export default function ActionBar({ fn, api }: ActionBarProps) {
             size: "small",
           }}
           sx={{ color: action.color as unknown as string }}
-          onClick={action?.onClick ?? undefined}
+          onClick={action.onClick}
           key={action.name}
           icon={action.icon}
           tooltipTitle={action.name}
@@ -62,21 +75,4 @@ export default function ActionBar({ fn, api }: ActionBarProps) {
       ))}
     </SpeedDial>
   );
-}
-
-
-async function deleteRow(api: GridApi<RowData> | null, deleteFn: DataFetch) {
-  const selectedData = api!.getSelectedRows();
-
-  api!.applyTransaction({
-    remove: selectedData,
-  })!;
-
-  console.log(selectedData);
-  // TODO: Change to a loop instead of promise.allSet to be able to catch bad 
-  // requests and display that to the user
-  const results = await Promise.allSettled(selectedData.map(
-    (row) => deleteFn("Users", "DELETE", { id: row.id })
-  ));
-  console.log(results);
 }

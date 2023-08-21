@@ -1,169 +1,142 @@
 import { useLoaderData } from "react-router-dom";
+import { useRef, useState } from "react";
+import { RowData, useCollumnDeffenition } from "./colDefs";
+import { GridApi } from "ag-grid-community";
+import { Button, IconButton } from "@mui/material";
+import ActionBar from "../../components/AGGrid/ActionBar";
+import FilterListOffIcon from "@mui/icons-material/FilterListOff";
+import { UserRes } from "../../utils/dataTypes";
+import { useUserHook } from "./UserHook";
+import Main from "../../components/AGGrid/GridContainer";
 import "ag-grid-community/styles/ag-grid.css";
 import "ag-grid-community/styles/ag-theme-material.css";
-import { AgGridReact } from "ag-grid-react";
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { colDef } from "./colDefs";
-import { ColDef, GridApi, GridReadyEvent } from "ag-grid-community";
-import { Box, Button, IconButton } from "@mui/material";
-import AddIcon from "@mui/icons-material/Add";
 import "../../components/grid-styles.css";
 import AddUserForm from "./AddUserForm";
-import ActionBar from "../../components/AGGrid/ActionBar";
-import FilterListOffIcon from '@mui/icons-material/FilterListOff';
-import 'ag-grid-enterprise';
-import { UserRes } from "../../utils/dataTypes";
-
-export interface RowData {
-  id: number;
-  username: string;
-  email: string;
-  posts: number;
-}
+import { dataFetch } from "../../functions/requests";
+import Grid from "../../components/AGGrid/Grid";
 
 export default function UsersRoute() {
   const data = useLoaderData() as UserRes[];
 
   const [hasFilter, setHasFilter] = useState(false);
-  const [isDialogOpen, setIsDialogOpen] = useState(false);
-  const [isEdit, setIsEdit] = useState(false);
-  const [rowData, setRowData] = useState<RowData[]>();
-  const [columnDefs, setColumnDefs] = useState<ColDef[]>(colDef(isEdit));
 
-  const gridStyle = useMemo(
-    () => ({
-      flexGrow: 1,
-      borderRadius: "20px",
-      border: "1px solid black",
-      overflow: "hidden",
-    }),
-    [],
-  );
+  // This data will bu updated to the API later
+  const [editedRows, setEditedRows] = useState<RowData[]>([]);
 
-  const defaultColDef = useMemo<ColDef>(() => {
-    return {
-      sortable: true,
-      filter: true,
-      resizable: true,
-      flex: 1,
-    };
-  }, []);
-
-  const onGridReady = useCallback(
-    (params: GridReadyEvent) => {
-      gridRef.current = params.api; // set the gridRef here
-      setRowData(
-        data.map((user) => {
-          return {
-            id: user.id,
-            username: user.username,
-            email: user.email,
-            posts: user.posts.length,
-          };
-        }),
-      );
-    },
-    [data],
-  );
-
+  const { columnDefs, isEditMode } = useCollumnDeffenition();
   const gridRef = useRef<GridApi<RowData> | null>(null);
+  const { rowData, onGridReady, setIsDialogOpen, isDialogOpen, setRowData } =
+    useUserHook({ data, gridRef });
 
   const handleOpenDialog = () => {
     setIsDialogOpen(true);
   };
 
-  useEffect(() => {
-    setColumnDefs(colDef(isEdit));
-  }, [isEdit]);
-
-
   const handleIsEditMode = (isEditing: boolean) => {
-    setIsEdit(isEditing);
+    isEditMode(isEditing);
     if (gridRef.current) {
       gridRef.current.deselectAll();
       gridRef.current.stopEditing();
     }
-  }
+    setEditedRows([]);
+    // gridRef.current?.setRowData(rowData ?? []);
+    console.log("state:", rowData);
+  };
 
   const resetFilter = () => {
     gridRef.current?.setFilterModel(null);
     setHasFilter(false);
-  }
+  };
+
+  const delRows = async () => {
+    const rowsToDelete = gridRef.current!.getSelectedRows();
+    setRowData((state) => {
+      const idsToDelete = rowsToDelete.map((row) => row.id);
+      return state!.filter((row) => !idsToDelete.includes(row.id));
+    });
+
+    // TODO: Change to a loop instead of promise.allSet to be able to
+    // fallback on error
+    const results = await Promise.allSettled(
+      rowsToDelete.map((row) => dataFetch("Users", "DELETE", { id: row.id })),
+    );
+
+    console.log(results);
+  };
+
+  const updateRows = async () => {
+    const res = await Promise.allSettled(editedRows.map(
+      (row) => {
+        const body = {
+          id: row.id,
+          name: row.username,
+          email: row.email,
+          postIds: row.posts.map((post) => post.id),
+        }
+        dataFetch("Users", "PUT", body)
+      }
+    ));
+    setEditedRows([]);
+    console.log(res);
+  };
 
   return (
-    <Box
-      display={"flex"}
-      flexDirection={"column"}
-      width={"100%"}
-      height={"100%"}
-      position={"relative"}
-    >
+    <Main>
       {/* Action Bar (edit, delete, ...) */}
-      <Box
-        borderColor="divider"
-        minHeight={"3rem"}
-        display={"flex"}
-        justifyContent={"end"}
-        alignItems={"center"}
-      >
-        {
-          hasFilter &&
-          <IconButton color="primary" sx={{ mb: 1, mr: "auto" }} onClick={resetFilter}>
+      <Main.ActionBar>
+        {hasFilter && (
+          <IconButton
+            color="primary"
+            sx={{ mb: 1, mr: "auto" }}
+            onClick={resetFilter}
+          >
             <FilterListOffIcon />
           </IconButton>
-        }
-
-        <ActionBar fn={handleIsEditMode} api={gridRef.current} />
-      </Box>
+        )}
+        <ActionBar
+          changeMode={handleIsEditMode}
+          delRows={delRows}
+          updateRows={updateRows}
+        />
+      </Main.ActionBar>
 
       {/* Grid */}
-      <div style={gridStyle} className="ag-theme-material">
-        <AgGridReact<RowData>
-          animateRows
-          editType={"fullRow"}
+      <Main.GridWrapper>
+        <Grid<RowData>
           rowData={rowData}
-          defaultColDef={defaultColDef}
-          onGridReady={onGridReady}
-          columnDefs={columnDefs}
-          rowSelection="multiple"
-          enableRangeSelection
-          suppressMultiRangeSelection
           onFilterChanged={(params) => {
             if (Object.keys(params.api.getFilterModel()).length > 0) {
-              setHasFilter(true)
+              setHasFilter(true);
             } else {
-              setHasFilter(false)
+              setHasFilter(false);
+            }
+          }}
+          columnDefs={columnDefs}
+          onGridReady={onGridReady}
+          onRowValueChanged={(params) => {
+            if (params.data) {
+              setEditedRows([...editedRows, params.data]);
             }
           }}
         />
-      </div>
+      </Main.GridWrapper>
 
       {/* Add Record action bar*/}
-      <Button
-        sx={{
-          width: "fit-content",
-          mt: 1,
-          ml: "auto",
-          "&:hover svg": {
-            transform: "rotate(180deg)",
-            transition: "all 500ms ease-in-out",
-          },
-        }}
+      <Main.FloatingForm
         onClick={handleOpenDialog}
-        startIcon={<AddIcon />}
-      >
-        Add record
-      </Button>
-
-      {/* Add Entries Modal */}
-      <AddUserForm
-        open={isDialogOpen}
-        addNewRow={(newRowData: RowData) => gridRef.current?.applyTransaction({
-          add: [newRowData]
-        })}
-        updateStateHandler={setRowData}
-        closeHandler={() => setIsDialogOpen(false)}
+        formChildren={
+          <>
+            <Button onClick={() => console.log("state", rowData)}>state</Button>
+          <AddUserForm
+            open={isDialogOpen}
+            closeHandler={() => {
+              setIsDialogOpen(false);
+            }}
+            updateStateHandler={setRowData}
+          />
+          </>
+        }
       />
-    </Box>
+    </Main>
   );
 }

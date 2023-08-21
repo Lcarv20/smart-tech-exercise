@@ -1,13 +1,9 @@
 import { configureStore } from "@reduxjs/toolkit";
-import usersReducer from "./usersReducer";
-import tagsReducer from "./tagsReducer";
-import postsReducer from "./postsReducer";
+import snackbarReducer from "./snackbarReducer";
 
 export const store = configureStore({
   reducer: {
-    users: usersReducer,
-    tags: tagsReducer,
-    posts: postsReducer,
+    snackbar: snackbarReducer,
   },
 });
 

@@ -9,23 +9,23 @@ import {
 } from "@mui/material";
 import React, { useState } from "react";
 import Form from "../../components/FormWrapper";
-import { z } from "zod";
-import { RowData } from ".";
 import { dataFetch } from "../../functions/requests";
-import { RowNodeTransaction } from "ag-grid-community";
+import { mailSchema, nameSchema } from "./schemas";
+import { RowData } from "./colDefs";
 
 interface AddUserFormProps {
   open: boolean;
   closeHandler: () => void;
-  updateStateHandler: React.Dispatch<React.SetStateAction<RowData[] | undefined>>
-  addNewRow: (newRowData: RowData) => RowNodeTransaction<RowData> | null | undefined
+  updateStateHandler: React.Dispatch<
+    React.SetStateAction<RowData[] | undefined>
+  >;
 }
 
-// ZOD SCHEMAS
-const nameSchema = z.string().nonempty().min(3)
-const mailSchema = z.string().nonempty().email()
-
-export default function AddUserForm({ open, closeHandler, updateStateHandler, addNewRow: refreshGrid }: AddUserFormProps) {
+export default function AddUserForm({
+  open,
+  closeHandler,
+  updateStateHandler,
+}: AddUserFormProps) {
   const [nameErr, setNameErr] = useState(false);
   const [emailErr, setEmailErr] = useState(false);
   const [name, setName] = useState("");
@@ -37,7 +37,6 @@ export default function AddUserForm({ open, closeHandler, updateStateHandler, ad
     setName("");
     setEmail("");
   };
-
 
   const handleSubmit = async () => {
     if (!validateSubmission(name, email, nameErr, emailErr)) {
@@ -51,32 +50,28 @@ export default function AddUserForm({ open, closeHandler, updateStateHandler, ad
     // 1. Post to API new user
     const res = await dataFetch("Users", "POST", {
       name,
-      email
-    })
+      email,
+    });
 
     // Handle error properly
     if (res.Error) {
-      console.log(res.Error)
-      alert(res.Message)
+      console.log(res.Error);
+      alert(res.Message);
     } else {
-      console.log(res)
-      const { email, posts, id, username } = res.data
+      console.log(res);
+      const { email, posts, id, username } = res.data;
       // Refactor my code to be more DRY
-      updateStateHandler(state => {
-        state?.push({
-          id,
-          username,
-          email,
-          posts: posts?.length ?? 0
-        })
-        return state
-      })
-      refreshGrid({
-        id,
-        username,
-        email,
-        posts: posts?.length ?? 0
-      })
+      updateStateHandler((state) => {
+        return [
+          ...(state ?? []),
+          {
+            id,
+            username,
+            email,
+            posts: posts?.length ?? 0,
+          },
+        ];
+      });
     }
 
     reset();
@@ -107,9 +102,9 @@ export default function AddUserForm({ open, closeHandler, updateStateHandler, ad
   };
 
   const closeModal = () => {
-    closeHandler()
-    reset()
-  }
+    closeHandler();
+    reset();
+  };
 
   return (
     <Dialog onClose={closeModal} open={open}>
@@ -148,8 +143,12 @@ export default function AddUserForm({ open, closeHandler, updateStateHandler, ad
   );
 }
 
-
-function validateSubmission(name: string, email: string, nameErr: boolean, emailErr: boolean) {
+function validateSubmission(
+  name: string,
+  email: string,
+  nameErr: boolean,
+  emailErr: boolean,
+) {
   if (nameErr || emailErr) {
     return false;
   }
