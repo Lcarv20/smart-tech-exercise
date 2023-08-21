@@ -19,7 +19,6 @@ export function useCollumnDeffenition() {
   const sBar = (message: string, severity: Severity) => {
     dispatch(
       openSnackbar({
-        open: true,
         message,
         severity,
       }),
@@ -49,9 +48,8 @@ export function useCollumnDeffenition() {
           sBar("Invalid name", Severity.error);
           return false;
         }
-        // sBar("Success", Severity.success);
         params.data.username = params.newValue;
-        return true;
+        return true
       },
     },
     {

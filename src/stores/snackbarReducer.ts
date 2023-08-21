@@ -1,7 +1,7 @@
 import { PayloadAction, createSlice } from "@reduxjs/toolkit";
 
 interface SnackbarState {
-  open: boolean;
+  open?: boolean;
   message: string;
   severity: Severity;
 }
@@ -24,7 +24,7 @@ const postsSlice = createSlice({
   initialState,
   reducers: {
     openSnackbar: (state, action: PayloadAction<SnackbarState>) => {
-      state.open = action.payload.open;
+      state.open = true
       state.message = action.payload.message;
       state.severity = action.payload.severity;
     },

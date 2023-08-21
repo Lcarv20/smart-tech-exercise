@@ -45,6 +45,9 @@ export default function Grid<T>({
       rowSelection="multiple"
       onFilterChanged={onFilterChanged}
       onRowValueChanged={onRowValueChanged}
+      onCellValueChanged={(params) => {
+        console.log("cell changed", params)
+      }}
     />
   );
 }

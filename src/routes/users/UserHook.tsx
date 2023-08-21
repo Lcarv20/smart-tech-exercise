@@ -19,9 +19,7 @@ export function useUserHook({ gridRef, data }: UserHookProps) {
   const onGridReady = useCallback(
     (params: GridReadyEvent) => {
       gridRef.current = params.api; // set the gridRef here
-      setRowData(
-        data,
-      );
+      setRowData(data);
     },
     [data, gridRef],
   );

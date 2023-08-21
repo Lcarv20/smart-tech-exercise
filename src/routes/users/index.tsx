@@ -14,9 +14,13 @@ import "../../components/grid-styles.css";
 import AddUserForm from "./AddUserForm";
 import { dataFetch } from "../../functions/requests";
 import Grid from "../../components/AGGrid/Grid";
+import { Severity, openSnackbar } from "../../stores/snackbarReducer";
+import { useAppDispatch } from "../../stores/hooks";
 
 export default function UsersRoute() {
   const data = useLoaderData() as UserRes[];
+
+  const dispatch = useAppDispatch();
 
   const [hasFilter, setHasFilter] = useState(false);
 
@@ -67,17 +71,22 @@ export default function UsersRoute() {
   const updateRows = async () => {
     const res = await Promise.allSettled(editedRows.map(
       (row) => {
+        console.log("ROW:", row);
         const body = {
           id: row.id,
           name: row.username,
           email: row.email,
-          postIds: row.posts.map((post) => post.id),
+          postIds: row.posts?.map((post) => post.id) ?? [],
         }
         dataFetch("Users", "PUT", body)
       }
     ));
     setEditedRows([]);
     console.log(res);
+    dispatch(openSnackbar({
+      message: "Users updated",
+      severity: Severity.success,
+    }));
   };
 
   return (

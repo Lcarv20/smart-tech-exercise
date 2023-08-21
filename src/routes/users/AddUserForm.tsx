@@ -11,13 +11,14 @@ import React, { useState } from "react";
 import Form from "../../components/FormWrapper";
 import { dataFetch } from "../../functions/requests";
 import { mailSchema, nameSchema } from "./schemas";
-import { RowData } from "./colDefs";
+// import { RowData } from "./colDefs";
+import { UserRes } from "../../utils/dataTypes";
 
 interface AddUserFormProps {
   open: boolean;
   closeHandler: () => void;
   updateStateHandler: React.Dispatch<
-    React.SetStateAction<RowData[] | undefined>
+    React.SetStateAction<UserRes[] | undefined>
   >;
 }
 
@@ -62,13 +63,14 @@ export default function AddUserForm({
       const { email, posts, id, username } = res.data;
       // Refactor my code to be more DRY
       updateStateHandler((state) => {
+        console.log("Statatata", state);
         return [
           ...(state ?? []),
           {
             id,
             username,
             email,
-            posts: posts?.length ?? 0,
+            posts: posts ?? [],
           },
         ];
       });
