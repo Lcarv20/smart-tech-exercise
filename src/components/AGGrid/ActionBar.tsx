@@ -4,32 +4,44 @@ import {
   SpeedDialIcon,
   useTheme,
 } from "@mui/material";
-import { useState } from "react";
+import { RefObject, useState } from "react";
 import DeleteIcon from "@mui/icons-material/Delete";
 import CheckIcon from "@mui/icons-material/Check";
 import EditIcon from "@mui/icons-material/Edit";
-import CloseIcon from "@mui/icons-material/Close";
+import CloseIcon from "@mui/icons-material/Close"; 
+import { RowData } from "../../routes/users/colDefs";
+import { AgGridReact } from "ag-grid-react";
 
 interface ActionBarProps {
   changeMode: (isEdit: boolean) => void;
   delRows: () => Promise<void>;
   updateRows: () => Promise<void>;
+
+
+  agGridRef : RefObject<AgGridReact<RowData> | null> 
 }
 
 export default function ActionBar({
   changeMode,
   delRows,
   updateRows,
+  agGridRef, 
 }: ActionBarProps) {
   const [open, setOpen] = useState(false);
   const theme = useTheme();
 
   const handleOpen = () => {
-    changeMode(true);
-
+    changeMode(true); 
     setOpen(true);
   };
+
+
   const handleClose = () => {
+
+    if((agGridRef.current?.context as any)?.discardChanges){ 
+      (agGridRef.current?.context as any)?.discardChanges();
+    } 
+    
     changeMode(false);
     setOpen(false);
   };
@@ -39,18 +51,32 @@ export default function ActionBar({
       icon: <DeleteIcon />,
       name: "Delete",
       color: theme.palette.error.main,
-      onClick: () => delRows(),
+      onClick: delRows,
     },
     {
       icon: <CheckIcon />,
       name: "Save",
       color: theme.palette.success.main,
-      onClick: () => updateRows(),
+      onClick: async () => { 
+          
+        await updateRows()  
+ 
+        agGridRef.current?.api.stopEditing()
+
+        const ctx = agGridRef.current?.context as any 
+        if(!!ctx.tracker)
+          ctx?.tracker.clear();
+ 
+        changeMode(false);
+        setOpen(false);
+      },
     },
   ];
 
   return (
-    <SpeedDial
+    <>
+     
+<SpeedDial
       ariaLabel="SpeedDial basic example"
       direction="left"
       icon={<SpeedDialIcon icon={<EditIcon />} openIcon={<CloseIcon />} />}
@@ -74,5 +100,7 @@ export default function ActionBar({
         />
       ))}
     </SpeedDial>
+    </>
+    
   );
 }
