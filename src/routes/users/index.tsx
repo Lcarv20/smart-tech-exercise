@@ -16,6 +16,7 @@ import { dataFetch } from "../../functions/requests";
 import Grid from "../../components/AGGrid/Grid";
 import { Severity, openSnackbar } from "../../stores/snackbarReducer";
 import { useAppDispatch } from "../../stores/hooks";
+import { AgGridReact } from "ag-grid-react";
 
 export default function UsersRoute() {
   const data = useLoaderData() as UserRes[];
@@ -24,13 +25,17 @@ export default function UsersRoute() {
 
   const [hasFilter, setHasFilter] = useState(false);
 
+
   // This data will bu updated to the API later
-  const [editedRows, setEditedRows] = useState<RowData[]>([]);
+  const [editedRows, setEditedRows] = useState<RowData[]>([]); 
 
   const { columnDefs, isEditMode } = useCollumnDeffenition();
-  const gridRef = useRef<GridApi<RowData> | null>(null);
+  
+  const gridRef = useRef<AgGridReact<RowData> | null>(null);
+    
   const { rowData, onGridReady, setIsDialogOpen, isDialogOpen, setRowData } =
     useUserHook({ data, gridRef });
+ 
 
   const handleOpenDialog = () => {
     setIsDialogOpen(true);
@@ -39,8 +44,8 @@ export default function UsersRoute() {
   const handleIsEditMode = (isEditing: boolean) => {
     isEditMode(isEditing);
     if (gridRef.current) {
-      gridRef.current.deselectAll();
-      gridRef.current.stopEditing();
+      gridRef.current.api.deselectAll();
+      gridRef.current.api.stopEditing();
     }
     setEditedRows([]);
     // gridRef.current?.setRowData(rowData ?? []);
@@ -48,12 +53,12 @@ export default function UsersRoute() {
   };
 
   const resetFilter = () => {
-    gridRef.current?.setFilterModel(null);
+    gridRef.current?.api.setFilterModel(null);
     setHasFilter(false);
   };
 
   const delRows = async () => {
-    const rowsToDelete = gridRef.current!.getSelectedRows();
+    const rowsToDelete = gridRef.current!.api.getSelectedRows();
     setRowData((state) => {
       const idsToDelete = rowsToDelete.map((row) => row.id);
       return state!.filter((row) => !idsToDelete.includes(row.id));
@@ -64,31 +69,34 @@ export default function UsersRoute() {
     const results = await Promise.allSettled(
       rowsToDelete.map((row) => dataFetch("Users", "DELETE", { id: row.id })),
     );
-
+ 
     console.log(results);
   };
 
-  const updateRows = async () => {
-    const res = await Promise.allSettled(editedRows.map(
-      (row) => {
-        console.log("ROW:", row);
-        const body = {
-          id: row.id,
-          name: row.username,
-          email: row.email,
-          postIds: row.posts?.map((post) => post.id) ?? [],
+  const updateRows = async () => { 
+    if(editedRows.length > 0){
+      const res = await Promise.allSettled(editedRows.map(
+        (row) => {
+          console.log("ROW:", row);
+          const body = {
+            id: row.id,
+            name: row.username,
+            email: row.email,
+            postIds: row.posts?.map((post) => post.id) ?? [],
+          }
+          dataFetch("Users", "PUT", body)
         }
-        dataFetch("Users", "PUT", body)
-      }
-    ));
-    setEditedRows([]);
-    console.log(res);
-    dispatch(openSnackbar({
-      message: "Users updated",
-      severity: Severity.success,
-    }));
+      ));
+      setEditedRows([]);  
+    
+      dispatch(openSnackbar({
+        message: "Users updated",
+        severity: Severity.success,
+      }));
+    }else gridRef.current?.api.stopEditing(true)
+    
   };
-
+  
   return (
     <Main>
       {/* Action Bar (edit, delete, ...) */}
@@ -106,9 +114,10 @@ export default function UsersRoute() {
           changeMode={handleIsEditMode}
           delRows={delRows}
           updateRows={updateRows}
+          agGridRef={gridRef}  
         />
       </Main.ActionBar>
-
+ 
       {/* Grid */}
       <Main.GridWrapper>
         <Grid<RowData>
@@ -119,12 +128,12 @@ export default function UsersRoute() {
             } else {
               setHasFilter(false);
             }
-          }}
+          }} 
           columnDefs={columnDefs}
-          onGridReady={onGridReady}
-          onRowValueChanged={(params) => {
-            if (params.data) {
-              setEditedRows([...editedRows, params.data]);
+          onGridReady={onGridReady} 
+          onRowValueChanged={(params) => {  
+            if (params.data) {  
+              setEditedRows([...editedRows, params.data]);  
             }
           }}
         />
@@ -135,7 +144,7 @@ export default function UsersRoute() {
         onClick={handleOpenDialog}
         formChildren={
           <>
-            <Button onClick={() => console.log("state", rowData)}>state</Button>
+          <Button onClick={() => console.log("state", rowData)}>state</Button>
           <AddUserForm
             open={isDialogOpen}
             closeHandler={() => {
