@@ -72,8 +72,7 @@ export default function Grid<T>({
       }}
       context={{
         tracker : tracker.current, 
-        foo: "bar",
-        discardChange: () => { 
+        discardChanges(){ 
           ref.current?.api.stopEditing(true)
           if(tracker?.current)
           tracker.current?.forEach((curr,key)=>{
