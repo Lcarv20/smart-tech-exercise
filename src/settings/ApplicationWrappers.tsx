@@ -8,6 +8,7 @@ import { theme } from "./mui-theme";
 import { Provider } from "react-redux";
 import { store } from "../stores/store";
 import Snacks from "../components/Snacks";
+import GridCtxProvider from "../components/AGGrid/GridContext";
 
 interface ApplicationWrappersProps {
   children: React.ReactNode;
@@ -18,6 +19,7 @@ export default function ApplicationWrappers({
   return (
     <React.StrictMode>
       <Provider store={store}>
+        <GridCtxProvider>
         <StyledEngineProvider injectFirst>
           <ThemeProvider theme={theme}>
             <>{children}</>
@@ -25,6 +27,7 @@ export default function ApplicationWrappers({
             <Snacks />
           </ThemeProvider>
         </StyledEngineProvider>
+      </GridCtxProvider>
       </Provider>
     </React.StrictMode>
   );

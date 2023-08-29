@@ -24,18 +24,17 @@ export default function UsersRoute() {
   const dispatch = useAppDispatch();
 
   const [hasFilter, setHasFilter] = useState(false);
-
+  console.log("fn:", setHasFilter);
 
   // This data will bu updated to the API later
-  const [editedRows, setEditedRows] = useState<RowData[]>([]); 
+  const [editedRows, setEditedRows] = useState<RowData[]>([]);
 
   const { columnDefs, isEditMode } = useCollumnDeffenition();
-  
+
   const gridRef = useRef<AgGridReact<RowData> | null>(null);
-    
+
   const { rowData, onGridReady, setIsDialogOpen, isDialogOpen, setRowData } =
     useUserHook({ data, gridRef });
- 
 
   const handleOpenDialog = () => {
     setIsDialogOpen(true);
@@ -67,36 +66,37 @@ export default function UsersRoute() {
     // TODO: Change to a loop instead of promise.allSet to be able to
     // fallback on error
     const results = await Promise.allSettled(
-      rowsToDelete.map((row) => dataFetch("Users", "DELETE", { id: row.id })),
+      rowsToDelete.map((row) => dataFetch("Users", "DELETE", { id: row.id }))
     );
- 
+
     console.log(results);
   };
 
-  const updateRows = async () => { 
-    if(editedRows.length > 0){
-      const res = await Promise.allSettled(editedRows.map(
-        (row) => {
+  const updateRows = async () => {
+    if (editedRows.length > 0) {
+      await Promise.allSettled(
+        editedRows.map((row) => {
           console.log("ROW:", row);
           const body = {
             id: row.id,
             name: row.username,
             email: row.email,
             postIds: row.posts?.map((post) => post.id) ?? [],
-          }
-          dataFetch("Users", "PUT", body)
-        }
-      ));
-      setEditedRows([]);  
-    
-      dispatch(openSnackbar({
-        message: "Users updated",
-        severity: Severity.success,
-      }));
-    }else gridRef.current?.api.stopEditing(true)
-    
+          };
+          dataFetch("Users", "PUT", body);
+        })
+      );
+      setEditedRows([]);
+
+      dispatch(
+        openSnackbar({
+          message: "Users updated",
+          severity: Severity.success,
+        })
+      );
+    } else gridRef.current?.api.stopEditing(true);
   };
-  
+
   return (
     <Main>
       {/* Action Bar (edit, delete, ...) */}
@@ -114,10 +114,10 @@ export default function UsersRoute() {
           changeMode={handleIsEditMode}
           delRows={delRows}
           updateRows={updateRows}
-          agGridRef={gridRef}  
+          agGridRef={gridRef}
         />
       </Main.ActionBar>
- 
+
       {/* Grid */}
       <Main.GridWrapper>
         <Grid<RowData>
@@ -128,12 +128,12 @@ export default function UsersRoute() {
             } else {
               setHasFilter(false);
             }
-          }} 
+          }}
           columnDefs={columnDefs}
-          onGridReady={onGridReady} 
-          onRowValueChanged={(params) => {  
-            if (params.data) {  
-              setEditedRows([...editedRows, params.data]);  
+          onGridReady={onGridReady}
+          onRowValueChanged={(params) => {
+            if (params.data) {
+              setEditedRows([...editedRows, params.data]);
             }
           }}
         />
@@ -144,14 +144,14 @@ export default function UsersRoute() {
         onClick={handleOpenDialog}
         formChildren={
           <>
-          <Button onClick={() => console.log("state", rowData)}>state</Button>
-          <AddUserForm
-            open={isDialogOpen}
-            closeHandler={() => {
-              setIsDialogOpen(false);
-            }}
-            updateStateHandler={setRowData}
-          />
+            <Button onClick={() => console.log("state", rowData)}>state</Button>
+            <AddUserForm
+              open={isDialogOpen}
+              closeHandler={() => {
+                setIsDialogOpen(false);
+              }}
+              updateStateHandler={setRowData}
+            />
           </>
         }
       />

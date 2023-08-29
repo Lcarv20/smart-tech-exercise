@@ -17,7 +17,6 @@ interface ActionBarProps {
   delRows: () => Promise<void>;
   updateRows: () => Promise<void>;
 
-
   agGridRef : RefObject<AgGridReact<RowData> | null> 
 }
 

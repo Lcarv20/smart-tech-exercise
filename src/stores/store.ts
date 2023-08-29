@@ -1,9 +1,11 @@
 import { configureStore } from "@reduxjs/toolkit";
 import snackbarReducer from "./snackbarReducer";
+import gridRefReducer from "./gridRef";
 
 export const store = configureStore({
   reducer: {
     snackbar: snackbarReducer,
+    gridRef: gridRefReducer,
   },
 });
 
