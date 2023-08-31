@@ -4,8 +4,8 @@ import { useLoaderData } from "react-router-dom";
 import { withEnhancedGrid } from "../../components/AGGrid/withGrid";
 import { PostRes } from "../../utils/dataTypes";
 import { postsColumnDefs } from "./columnDefs";
-import { ActionBar } from "../../components/Coumpound/ActionBar";
-import Main from "../../components/AGGrid/GridContainer";
+import { ActionBar } from "../../components/ActionBar/ActionBar";
+import Main from "../../components/Coumpound/BodyCompound";
 
 export default function PostsRoute() {
   const data = useLoaderData() as PostRes[];

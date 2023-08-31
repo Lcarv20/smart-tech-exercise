@@ -1,18 +1,16 @@
 import { useLoaderData } from "react-router-dom";
 import { useRef, useState } from "react";
 import { RowData, useCollumnDeffenition } from "./colDefs";
-import { GridApi } from "ag-grid-community";
-import { Button, IconButton } from "@mui/material";
-import ActionBar from "../../components/AGGrid/ActionBar";
+import {  IconButton } from "@mui/material";
+import ActionBar from "../../components/AGGrid/ActionBar2";
 import FilterListOffIcon from "@mui/icons-material/FilterListOff";
 import { UserRes } from "../../utils/dataTypes";
 import { useUserHook } from "./UserHook";
-import Main from "../../components/AGGrid/GridContainer";
+import Main from "../../components/Coumpound/BodyCompound";
 import "ag-grid-community/styles/ag-grid.css";
 import "ag-grid-community/styles/ag-theme-material.css";
 import "../../components/grid-styles.css";
-import AddUserForm from "./AddUserForm";
-import { dataFetch } from "../../functions/requests";
+import { ReqType, dataFetch } from "../../functions/requests";
 import Grid from "../../components/AGGrid/Grid";
 import { Severity, openSnackbar } from "../../stores/snackbarReducer";
 import { useAppDispatch } from "../../stores/hooks";
@@ -66,7 +64,7 @@ export default function UsersRoute() {
     // TODO: Change to a loop instead of promise.allSet to be able to
     // fallback on error
     const results = await Promise.allSettled(
-      rowsToDelete.map((row) => dataFetch("Users", "DELETE", { id: row.id }))
+      rowsToDelete.map((row) => dataFetch("Users",ReqType.del, { id: row.id }))
     );
 
     console.log(results);
@@ -83,7 +81,7 @@ export default function UsersRoute() {
             email: row.email,
             postIds: row.posts?.map((post) => post.id) ?? [],
           };
-          dataFetch("Users", "PUT", body);
+          dataFetch("Users",ReqType.put, body);
         })
       );
       setEditedRows([]);
@@ -140,21 +138,12 @@ export default function UsersRoute() {
       </Main.GridWrapper>
 
       {/* Add Record action bar*/}
-      <Main.FloatingForm
-        onClick={handleOpenDialog}
-        formChildren={
-          <>
-            <Button onClick={() => console.log("state", rowData)}>state</Button>
-            <AddUserForm
-              open={isDialogOpen}
-              closeHandler={() => {
-                setIsDialogOpen(false);
-              }}
-              updateStateHandler={setRowData}
-            />
-          </>
-        }
-      />
+      {/* <Main.FloatingForm
+      handleSubmit={} 
+      title="Add User"
+      >
+
+      </Main.FloatingForm> */}
     </Main>
   );
 }

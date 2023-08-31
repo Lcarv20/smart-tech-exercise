@@ -1,4 +1,4 @@
-import React, { useContext, useMemo, useRef } from "react";
+import React, { useContext, useMemo, useRef, useState } from "react";
 import { AgGridReactProps } from "ag-grid-react";
 import { CellValueChangedEvent, GridReadyEvent } from "ag-grid-community";
 import { GridCtx } from "./GridContext";
@@ -13,6 +13,7 @@ export function withEnhancedGrid<RowDataType>(
   const ComponentWithExtraInfo = (props: AgGridReactProps<RowDataType>) => {
     const {gridRef, setGridRef } = useContext(GridCtx);
     const rowDataTracker = useRef<Record<number, Record<string, RowDataType>>>({});
+    const [editMode, setEditMode] = useState(false)
 
     const defaultColDef = useMemo(
       () => ({
@@ -25,6 +26,8 @@ export function withEnhancedGrid<RowDataType>(
     );
 
     const context = {
+      editMode: editMode,
+      setEditMode: (mode: boolean) => setEditMode(mode),
       editedRows: rowDataTracker,
       setEditedRows: (params: CellValueChangedEvent) => {
         const { oldValue } = params;
@@ -56,7 +59,7 @@ export function withEnhancedGrid<RowDataType>(
       }
       */
       discardChanges: (gridRef: GridReadyEvent) => {
-        let currTracker = rowDataTracker.current;
+        const currTracker = rowDataTracker.current;
         Object.keys(currTracker).forEach(function (rowIdStr) {
           const node = gridRef.api.getRowNode(rowIdStr);
           const data = node!.data;
@@ -68,7 +71,7 @@ export function withEnhancedGrid<RowDataType>(
 
           node?.updateData(data);
         });
-        currTracker = {};
+        rowDataTracker.current= {};
       },
     };
 
@@ -92,9 +95,9 @@ export function withEnhancedGrid<RowDataType>(
           }
         }}
         context={context}
-        enableCellChangeFlash
+        enableCellChangeFlash 
       />
-      <button onClick={() => {console.log(gridRef?.context)}}>btn</button>
+      <button onClick={() => {console.log(gridRef?.context.editedRows)}}>btn</button>
       </Box>
     );
   };

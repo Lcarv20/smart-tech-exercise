@@ -1,11 +1,11 @@
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
 
-import { Layout } from "./routes/layout";
-import UsersRoute from "./routes/users";
-import PostsRoute from "./routes/posts";
-import TagsRoute from "./routes/tags";
+import { Layout } from "./pages/layout";
+import UsersRoute from "./pages/users";
+import PostsRoute from "./pages/posts";
+import TagsRoute from "./pages/tags";
 import { dataFetch } from "./functions/requests";
-import Home from "./routes/home";
+import Home from "./pages/home";
 
 const router = createBrowserRouter([
   {

@@ -9,7 +9,7 @@ import DeleteIcon from "@mui/icons-material/Delete";
 import CheckIcon from "@mui/icons-material/Check";
 import EditIcon from "@mui/icons-material/Edit";
 import CloseIcon from "@mui/icons-material/Close"; 
-import { RowData } from "../../routes/users/colDefs";
+import { RowData } from "../../pages/users/colDefs";
 import { AgGridReact } from "ag-grid-react";
 
 interface ActionBarProps {

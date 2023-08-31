@@ -1,9 +1,4 @@
 import {
-  Button,
-  Dialog,
-  DialogActions,
-  DialogContent,
-  DialogTitle,
   Stack,
   TextField,
 } from "@mui/material";
@@ -22,8 +17,7 @@ interface AddUserFormProps {
   >;
 }
 
-export default function AddUserForm({
-  open,
+export default function useUserForm({
   closeHandler,
   updateStateHandler,
 }: AddUserFormProps) {
@@ -39,7 +33,7 @@ export default function AddUserForm({
     setEmail("");
   };
 
-  const handleSubmit = async () => {
+   const handleSubmit = async () => {
     if (!validateSubmission(name, email, nameErr, emailErr)) {
       alert("Invalid data");
       return;
@@ -75,11 +69,10 @@ export default function AddUserForm({
         ];
       });
     }
-
     reset();
   };
 
-  const handleNameChange = (
+  const handleName = (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
   ) => {
     const val = nameSchema.safeParse(e.target.value);
@@ -91,7 +84,7 @@ export default function AddUserForm({
     setName(e.target.value);
   };
 
-  const handleMailChange = (
+  const handleMail = (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
   ) => {
     const val = mailSchema.safeParse(e.target.value);
@@ -103,15 +96,7 @@ export default function AddUserForm({
     setEmail(e.target.value);
   };
 
-  const closeModal = () => {
-    closeHandler();
-    reset();
-  };
-
   return (
-    <Dialog onClose={closeModal} open={open}>
-      <DialogTitle>Add a new user.</DialogTitle>
-      <DialogContent>
         <Form>
           <Stack>
             <TextField
@@ -121,7 +106,7 @@ export default function AddUserForm({
               variant="standard"
               error={nameErr}
               value={name}
-              onChange={handleNameChange}
+              onChange={handleName}
             />
             <TextField
               id="standard-basic"
@@ -130,31 +115,18 @@ export default function AddUserForm({
               variant="standard"
               error={emailErr}
               value={email}
-              onChange={handleMailChange}
+              onChange={handleMail}
             />
           </Stack>
         </Form>
-      </DialogContent>
-      <DialogActions>
-        <Button variant="text" color="error" onClick={closeHandler}>
-          Cancel
-        </Button>
-        <Button onClick={handleSubmit}>Submit</Button>
-      </DialogActions>
-    </Dialog>
   );
 }
 
 function validateSubmission(
-  name: string,
-  email: string,
   nameErr: boolean,
   emailErr: boolean,
 ) {
   if (nameErr || emailErr) {
-    return false;
-  }
-  if (name === "" || email === "") {
     return false;
   }
   return true;

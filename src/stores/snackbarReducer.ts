@@ -35,5 +35,4 @@ const postsSlice = createSlice({
 });
 
 export const { openSnackbar, closeSnackbar } = postsSlice.actions;
-
 export default postsSlice.reducer;

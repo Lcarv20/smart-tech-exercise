@@ -1,7 +1,7 @@
 // General fetch function
-export async function dataFetch<T>(endpoint: string, method = "GET", body?: T) {
+export async function dataFetch<T>(endpoint: string, method?: ReqType, body?: T) {
   const reqProperties: RequestInit = {
-    method: method,
+    method: method ??  ReqType.get,
     headers: {
       "Content-Type": "application/json",
     },
@@ -25,3 +25,10 @@ export async function dataFetch<T>(endpoint: string, method = "GET", body?: T) {
 }
 
 export type DataFetch = typeof dataFetch;
+
+export enum ReqType {
+  post = "POST",
+  put = "PUT",
+  get = "GET",
+  del = "DELETE"
+}

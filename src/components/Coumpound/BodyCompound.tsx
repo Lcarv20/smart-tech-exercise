@@ -1,12 +1,8 @@
 import {
   Box,
   Button,
-  Dialog,
-  DialogActions,
-  DialogContent,
-  DialogTitle,
 } from "@mui/material";
-import React, { useMemo, useState } from "react";
+import React, { createContext, useMemo, useState } from "react";
 import AddIcon from "@mui/icons-material/Add";
 
 function Main({ children }: { children: React.ReactNode }) {
@@ -55,23 +51,26 @@ function GridWrapper({ children }: { children: React.ReactNode }) {
   );
 }
 
-function FloatingForm({
-  handleSubmit,
-  children,
-  title,
-}: {
-  children: React.ReactNode;
-  handleSubmit: () => Promise<void>;
-  title: string;
-}) {
+interface FormDialogCtx {
+  isOpen: boolean;
+  close: () => void;
+}
+
+export const FormDialogContext = createContext<FormDialogCtx>({
+  isOpen: false,
+  close: () => null,
+});
+
+function FloatingForm({ children }: { children: React.ReactNode }) {
   const [isOpen, setIsOpen] = useState(false);
 
-  function handleClose() {
-    setIsOpen(false);
-  }
-
   return (
-    <>
+    <FormDialogContext.Provider
+      value={{
+        isOpen,
+        close: () => setIsOpen(false),
+      }}
+    >
       <Button
         sx={{
           width: "fit-content",
@@ -87,23 +86,8 @@ function FloatingForm({
       >
         Add record
       </Button>
-
-      <Dialog
-        maxWidth="xs"
-        fullWidth
-        onClose={handleClose}
-        open={isOpen}
-      >
-        <DialogTitle>{title}</DialogTitle>
-        <DialogContent>{children}</DialogContent>
-        <DialogActions>
-          <Button variant="text" color="error" onClick={handleClose}>
-            Cancel
-          </Button>
-          <Button onClick={handleSubmit}>Submit</Button>
-        </DialogActions>
-      </Dialog>
-    </>
+      {children}
+    </FormDialogContext.Provider>
   );
 }
 
