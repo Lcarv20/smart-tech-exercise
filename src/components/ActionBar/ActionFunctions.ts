@@ -1,32 +1,28 @@
 import { GridReadyEvent } from "ag-grid-community";
 import { Severity } from "../../stores/snackbarReducer";
-import { TagRes } from "../../utils/dataTypes";
 
-type SBar = (s: string, severity: Severity) => void;
-type UpdateHandler = (tag: TagRes) => Promise<void>;
+type UpdateHandler<T> = (tag: T) => Promise<void>;
 type DeleteHandler = (id: number) => Promise<void>;
 
-export async function updateRows(
+export async function updateRows<T>(
   gridRef:GridReadyEvent,
-  sBar: SBar,
-  updateHandler: UpdateHandler
+  updateHandler: UpdateHandler<T>
 ) {
   const ctxData = gridRef?.context.editedRows.current;
   const nodeIds = Object.keys(ctxData);
   const data = nodeIds.map(
-    (id: string) => gridRef?.api.getRowNode(nodeIds[+id])?.data
+    (id: string) => gridRef?.api.getRowNode(id)?.data
   );
-
   if (data) {
     await Promise.allSettled(data.map((row) => updateHandler(row)));
     gridRef!.context.editedRows.current = {};
-    sBar("Updated " + data.length + " rows", Severity.success);
+    gridRef.context.snack("Updated " + data.length + " rows", Severity.success);
   }
 }
 
 export async function deleteRows(
   gridRef: GridReadyEvent,
-  sBar: SBar,
+  // sBar: SBar,
   deleteHandler: DeleteHandler
 ) {
   const rows = gridRef?.api.getSelectedRows();
@@ -37,7 +33,7 @@ export async function deleteRows(
     );
     console.log(results);
   }
-  sBar("Deleted " + rows?.length + " rows", Severity.info);
+  gridRef.context.snack("Deleted " + rows?.length + " rows", Severity.info);
 
   gridRef?.api.applyTransactionAsync({
     remove: gridRef?.api.getSelectedRows(),

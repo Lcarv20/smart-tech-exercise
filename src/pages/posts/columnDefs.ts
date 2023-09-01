@@ -1,19 +1,28 @@
-import { ColDef } from "ag-grid-community";
+import { ColDef, EditableCallbackParams } from "ag-grid-community";
+
+const editable = (params: EditableCallbackParams) => params.context.editMode
 
 export const postsColumnDefs: ColDef[] = [
   {
     field: "id",
+    hide: true,
+    checkboxSelection: true,
+    headerCheckboxSelection: true,
+    maxWidth: 200,
   },
   {
     field: "title",
-    editable: true,
+    editable
   },
   {
     field: "description",
-    editable: true,
+    editable
   },
   {
     field: "postedDate",
+    valueFormatter: (params) => {
+      return params.value.split("T")[0];
+    }
   },
   {
     field: "user.username",
@@ -26,10 +35,7 @@ export const postsColumnDefs: ColDef[] = [
     field: "tagIds",
     headerName: "Tags",
     valueFormatter: (params) => {
-      const str = params.value ?? [];
-      // Fetch all tags here
-      // and display in a nice component
-      return str ?? 0
+      return params.value?.length ?? "No tags";
     },
   },
 ];

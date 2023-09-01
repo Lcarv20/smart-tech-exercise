@@ -3,7 +3,6 @@ import { TagRes } from "../../utils/dataTypes";
 import React, { useState } from "react";
 import { tagsColumnDefs } from "./columnDefs.ts";
 import { withEnhancedGrid } from "../../components/AGGrid/withGrid.tsx";
-
 import { AgGridReact } from "ag-grid-react";
 import Main from "../../components/Coumpound/BodyCompound.tsx";
 import { ActionBar } from "../../components/ActionBar/ActionBar.tsx";
@@ -22,7 +21,6 @@ export default function TagsRoute() {
   }
 
   async function updateTag(tag: TagRes) {
-    console.log(tag)
     return await dataFetch("Tags", ReqType.put, {
       id: tag.id,
       name: tag.name,

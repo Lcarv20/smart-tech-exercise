@@ -25,8 +25,6 @@ export default function TagForm() {
   const sBar = (message: string, severity: Severity) =>
     dispatch(openSnackbar({ message, severity }));
 
-    gridRef?.context.discardChanges()
-
   const handleTagName = (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
   ) => {
@@ -44,7 +42,7 @@ export default function TagForm() {
   }
 
   const handleSubmit = async () => {
-    if (!validateSubmition(tagName, tagNameErr)) {
+    if (!vallidation(tagName, tagNameErr)) {
       sBar("Invalid Submition", Severity.error);
       return;
     }
@@ -99,14 +97,13 @@ export default function TagForm() {
         <Button variant="text" color="error" onClick={close}>
           Cancel
         </Button>
-        {/* Handle submit here */}
         <Button onClick={handleSubmit}>Submit</Button>
       </DialogActions>
     </Dialog>
   );
 }
 
-function validateSubmition(tagName: string, tagErr: boolean) {
+function vallidation(tagName: string, tagErr: boolean) {
   if (tagErr || tagName.trim().length === 0) return false;
   return true;
 }

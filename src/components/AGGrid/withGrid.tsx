@@ -4,16 +4,30 @@ import { CellValueChangedEvent, GridReadyEvent } from "ag-grid-community";
 import { GridCtx } from "./GridContext";
 import "ag-grid-community/styles/ag-grid.css";
 import "ag-grid-community/styles/ag-theme-material.css";
-import "../../components/grid-styles.css";
+import "./grid-styles.css";
 import { Box } from "@mui/material";
+import { useAppDispatch } from "../../stores/hooks";
+import { Severity, openSnackbar } from "../../stores/snackbarReducer";
 
 export function withEnhancedGrid<RowDataType>(
   WrappedGrid: React.ComponentType<AgGridReactProps<RowDataType>>
 ) {
   const ComponentWithExtraInfo = (props: AgGridReactProps<RowDataType>) => {
-    const {gridRef, setGridRef } = useContext(GridCtx);
-    const rowDataTracker = useRef<Record<number, Record<string, RowDataType>>>({});
-    const [editMode, setEditMode] = useState(false)
+    const { gridRef, setGridRef } = useContext(GridCtx);
+    const rowDataTracker = useRef<Record<number, Record<string, RowDataType>>>(
+      {}
+    );
+    const [editMode, setEditMode] = useState(false);
+    const dispatch = useAppDispatch();
+
+    const snack = (message: string, severity: Severity) => {
+      dispatch(
+        openSnackbar({
+          message,
+          severity,
+        })
+      );
+    };
 
     const defaultColDef = useMemo(
       () => ({
@@ -21,12 +35,14 @@ export function withEnhancedGrid<RowDataType>(
         filter: true,
         resizable: true,
         flex: 1,
+        editable: false,
       }),
       []
     );
 
     const context = {
       editMode: editMode,
+      snack: snack,
       setEditMode: (mode: boolean) => setEditMode(mode),
       editedRows: rowDataTracker,
       setEditedRows: (params: CellValueChangedEvent) => {
@@ -36,9 +52,9 @@ export function withEnhancedGrid<RowDataType>(
 
         // rowId is being verified against null because rows have 0 index
         // so the verification if(!row) wouldn't work
-        if(rowId  === null || !colId) {
-          console.log(rowId, colId)
-          console.error('rowId and colId are required');
+        if (rowId === null || !colId) {
+          console.log(rowId, colId);
+          console.error("rowId and colId are required");
           return;
         }
 
@@ -71,7 +87,7 @@ export function withEnhancedGrid<RowDataType>(
 
           node?.updateData(data);
         });
-        rowDataTracker.current= {};
+        rowDataTracker.current = {};
       },
     };
 
@@ -80,24 +96,30 @@ export function withEnhancedGrid<RowDataType>(
       setGridRef(params);
     }
     return (
-    <Box className="ag-theme-material" width={"100%"} height={"100%"}>
-      <WrappedGrid
-        {...props}
-        rowSelection="multiple"
-        animateRows
-        editType={"fullRow"}
-        onGridReady={onGridReady}
-        defaultColDef={defaultColDef}
-        onCellValueChanged={(params) => {
-          console.log('Row edited')
-          if (params.oldValue.toString() !== params.newValue.toString()) {
-            params.context.setEditedRows(params);
-          }
-        }}
-        context={context}
-        enableCellChangeFlash 
-      />
-      <button onClick={() => {console.log(gridRef?.context.editedRows)}}>btn</button>
+      <Box className="ag-theme-material" width={"100%"} height={"100%"}>
+        <WrappedGrid
+          {...props}
+          rowSelection="multiple"
+          animateRows
+          editType={"fullRow"}
+          onGridReady={onGridReady}
+          defaultColDef={defaultColDef}
+          onCellValueChanged={(params) => {
+            console.log("Row edited");
+            if (params.oldValue.toString() !== params.newValue.toString()) {
+              params.context.setEditedRows(params);
+            }
+          }}
+          context={context}
+          enableCellChangeFlash
+        />
+        <button
+          onClick={() => {
+            console.log(gridRef?.context.editedRows);
+          }}
+        >
+          btn
+        </button>
       </Box>
     );
   };
