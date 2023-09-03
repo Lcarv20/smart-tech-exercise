@@ -24,7 +24,7 @@ export default function TagsRoute() {
     return await dataFetch("Tags", ReqType.put, {
       id: tag.id,
       name: tag.name,
-      postIds: tag.posts.map((post) => post.id),
+      postIds: tag.posts?.map((post) => post.id) ?? [],
     });
   }
 
