@@ -26,7 +26,7 @@ export default function UsersRoute() {
       id: user.id,
       name: user.username,
       email: user.email,
-      postIds: user.posts.map((post) => post.id),
+      postIds: user.posts?.map((post) => post.id) ?? [],
     })
     // return await dataFetch("Users", ReqType.put, {
     //   id: user.id,

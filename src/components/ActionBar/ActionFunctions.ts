@@ -5,16 +5,19 @@ type UpdateHandler<T> = (tag: T) => Promise<void>;
 type DeleteHandler = (id: number) => Promise<void>;
 
 export async function updateRows<T>(
-  gridRef:GridReadyEvent,
+  gridRef: GridReadyEvent,
   updateHandler: UpdateHandler<T>
 ) {
   const ctxData = gridRef?.context.editedRows.current;
   const nodeIds = Object.keys(ctxData);
-  const data = nodeIds.map(
-    (id: string) => gridRef?.api.getRowNode(id)?.data
-  );
+  const data = nodeIds.map((id: string) => gridRef?.api.getRowNode(id)?.data);
   if (data) {
-    await Promise.allSettled(data.map((row) => updateHandler(row)));
+    await Promise.allSettled(
+      data.map((row) => {
+        console.log("updating", row);
+        updateHandler(row);
+      })
+    );
     gridRef!.context.editedRows.current = {};
     gridRef.context.snack("Updated " + data.length + " rows", Severity.success);
   }
