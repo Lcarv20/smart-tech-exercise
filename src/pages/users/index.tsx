@@ -22,11 +22,19 @@ export default function UsersRoute() {
   }
 
   async function updateUser(user: UserRes) {
-    return await dataFetch("Users", ReqType.put, {
+    const res = await dataFetch("Users", ReqType.put, {
       id: user.id,
-      username: user.username,
+      name: user.username,
       email: user.email,
-    });
+      postIds: user.posts.map((post) => post.id),
+    })
+    // return await dataFetch("Users", ReqType.put, {
+    //   id: user.id,
+    //   username: user.username,
+    //   email: user.email,
+    // });
+    console.log(res)
+    return res
   }
 
   return (
